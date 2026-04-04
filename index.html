@@ -149,7 +149,7 @@
             </div>
           </div>
         </div>
-        <div class="concept-toggle">Click to expand ▼</div>
+        <div class="concept-toggle">Click to expand [v]</div>
       </div>
 
       <div class="concept-card" onclick="toggleConcept(this)">
@@ -168,13 +168,13 @@
             workers.</p>
           <div class="mini-diagram">
             <div class="mini-box c-blue">Task Queue</div>
-            <div class="mini-arrow">→</div>
+            <div class="mini-arrow">-&gt;</div>
             <div class="mini-box c-purple">Pool Manager</div>
-            <div class="mini-arrow">→</div>
+            <div class="mini-arrow">-&gt;</div>
             <div class="mini-box c-cyan">Workers</div>
           </div>
         </div>
-        <div class="concept-toggle">Click to expand ▼</div>
+        <div class="concept-toggle">Click to expand [v]</div>
       </div>
 
       <div class="concept-card" onclick="toggleConcept(this)">
@@ -195,10 +195,10 @@
             <div class="queue-item-mini waiting">T4</div>
             <div class="queue-item-mini waiting">T3</div>
             <div class="queue-item-mini running">T2</div>
-            <div class="queue-item-mini done">T1 ✓</div>
+            <div class="queue-item-mini done">T1 Done</div>
           </div>
         </div>
-        <div class="concept-toggle">Click to expand ▼</div>
+        <div class="concept-toggle">Click to expand [v]</div>
       </div>
 
       <div class="concept-card" onclick="toggleConcept(this)">
@@ -212,19 +212,19 @@
         <h3>Worker Threads</h3>
         <p class="concept-preview">Persistent execution units that pull and process tasks</p>
         <div class="concept-detail">
-          <p>Each worker thread runs an infinite loop: wait for task → acquire task from queue → execute task → release
-            → repeat. This avoids the overhead of thread creation/destruction for every request.</p>
+          <p>Each worker thread runs an infinite loop: wait for task -&gt; acquire task from queue -&gt; execute task -&gt; release
+            -&gt; repeat. This avoids the overhead of thread creation and destruction for every request.</p>
           <div class="worker-states">
             <span class="ws idle">Idle</span>
-            <span class="ws-arr">→</span>
+            <span class="ws-arr">-&gt;</span>
             <span class="ws running">Running</span>
-            <span class="ws-arr">→</span>
+            <span class="ws-arr">-&gt;</span>
             <span class="ws done">Done</span>
-            <span class="ws-arr">→</span>
+            <span class="ws-arr">-&gt;</span>
             <span class="ws idle">Idle</span>
           </div>
         </div>
-        <div class="concept-toggle">Click to expand ▼</div>
+        <div class="concept-toggle">Click to expand [v]</div>
       </div>
 
       <div class="concept-card" onclick="toggleConcept(this)">
@@ -242,13 +242,13 @@
             corruption.</p>
           <div class="sync-visual">
             <div class="sync-thread">Thread A</div>
-            <div class="lock-icon">🔒</div>
+            <div class="lock-icon">LOCK</div>
             <div class="sync-resource">Shared Data</div>
-            <div class="lock-icon">🔒</div>
+            <div class="lock-icon">LOCK</div>
             <div class="sync-thread">Thread B</div>
           </div>
         </div>
-        <div class="concept-toggle">Click to expand ▼</div>
+        <div class="concept-toggle">Click to expand [v]</div>
       </div>
 
       <div class="concept-card" onclick="toggleConcept(this)">
@@ -260,13 +260,13 @@
         <h3>Performance Optimization</h3>
         <p class="concept-preview">Tuning pool size and queue bounds for maximum throughput</p>
         <div class="concept-detail">
-          <p>Optimal thread pool size ≈ N_cpu × (1 + W/C), where W = wait time and C = compute time. Too few threads →
-            CPU underutilization. Too many → context switch overhead and memory pressure.</p>
+          <p>Optimal thread pool size ~= N_cpu x (1 + W/C), where W = wait time and C = compute time. Too few threads can
+            underutilize the CPU. Too many threads add context-switch overhead and memory pressure.</p>
           <div class="formula-box">
-            <code>Optimal = CPU_Cores × (1 + Wait/Compute)</code>
+            <code>Optimal = CPU_Cores x (1 + Wait/Compute)</code>
           </div>
         </div>
-        <div class="concept-toggle">Click to expand ▼</div>
+        <div class="concept-toggle">Click to expand [v]</div>
       </div>
     </div>
   </section>
@@ -290,6 +290,19 @@
             </svg>
             Pool Configuration
           </h3>
+          <div class="task-type-select">
+            <label>Scenario Preset</label>
+            <div class="inline-control-row">
+              <select id="simPreset" class="select-input">
+                <option value="balanced" selected>Balanced</option>
+                <option value="burst">Burst Traffic</option>
+                <option value="cpuHeavy">CPU Heavy</option>
+                <option value="ioHeavy">I/O Heavy</option>
+                <option value="failureLab">Failure Lab</option>
+              </select>
+              <button class="mini-action-btn" onclick="applyPreset()">Apply</button>
+            </div>
+          </div>
           <div class="ctrl-group">
             <label>Worker Threads <span class="ctrl-val" id="threadCountVal">4</span></label>
             <input type="range" id="threadCount" min="1" max="12" value="4" class="slider"
@@ -309,6 +322,22 @@
             <label>Task Arrival Rate <span class="ctrl-val" id="arrivalRateVal">2/s</span></label>
             <input type="range" id="arrivalRate" min="1" max="10" value="2" class="slider"
               oninput="updateSlider('arrivalRate','arrivalRateVal',this.value+'\/s')" />
+          </div>
+          <div class="task-type-select">
+            <label>Scheduling Policy</label>
+            <select id="schedulePolicy" class="select-input">
+              <option value="priority" selected>Priority First</option>
+              <option value="fifo">FIFO</option>
+              <option value="shortest">Shortest Job First</option>
+            </select>
+          </div>
+          <div class="task-type-select">
+            <label>Queue Overflow Policy</label>
+            <select id="overflowPolicy" class="select-input">
+              <option value="reject" selected>Reject New Task</option>
+              <option value="dropLowest">Drop Lowest Priority</option>
+              <option value="expand">Auto Expand Queue</option>
+            </select>
           </div>
           <div class="ctrl-toggle-group">
             <label class="toggle-label">
@@ -380,6 +409,24 @@
               <option value="low">Low Priority</option>
             </select>
           </div>
+          <div class="task-type-select">
+            <label>Task Type</label>
+            <select id="taskType" class="select-input">
+              <option value="cpu">CPU Bound</option>
+              <option value="io" selected>I/O Bound</option>
+              <option value="short">Short Task</option>
+              <option value="long">Long Task</option>
+              <option value="critical">Critical Task</option>
+              <option value="mixed">Auto Mix</option>
+            </select>
+          </div>
+          <div class="task-type-select">
+            <label>Export Simulation Report</label>
+            <div class="inline-control-row">
+              <button class="mini-action-btn" onclick="exportSimulationReport('txt')">TXT</button>
+              <button class="mini-action-btn secondary" onclick="exportSimulationReport('json')">JSON</button>
+            </div>
+          </div>
         </div>
 
         <!-- Live Metrics -->
@@ -415,6 +462,18 @@
               <div class="metric-val" id="simThroughput">0</div>
               <div class="metric-lbl">Tasks/sec</div>
             </div>
+            <div class="metric-item">
+              <div class="metric-val" id="simAvgWait">0ms</div>
+              <div class="metric-lbl">Avg Wait</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val" id="simAvgTurnaround">0ms</div>
+              <div class="metric-lbl">Turnaround</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val" id="simUtilization">0%</div>
+              <div class="metric-lbl">Utilization</div>
+            </div>
           </div>
         </div>
       </div>
@@ -428,7 +487,7 @@
               <span class="section-dot waiting-dot"></span>Task Queue
             </div>
             <div class="queue-container" id="queueContainer">
-              <div class="queue-empty-msg" id="queueEmptyMsg">Queue is empty — tasks will appear here</div>
+              <div class="queue-empty-msg" id="queueEmptyMsg">Queue is empty - tasks will appear here</div>
             </div>
           </div>
 
@@ -459,6 +518,47 @@
           </div>
           <div class="log-body" id="activityLog">
             <div class="log-entry info">System initialized. Configure settings and click Start.</div>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-header">
+            <span>Simulation Summary</span>
+            <span class="summary-subtitle" id="summaryPolicy">Preset: Balanced</span>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span class="summary-label">Tasks Generated</span>
+              <span class="summary-value" id="summaryGenerated">0</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Tasks Rejected</span>
+              <span class="summary-value" id="summaryRejected">0</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Peak Queue</span>
+              <span class="summary-value" id="summaryPeakQueue">0</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Peak Busy Threads</span>
+              <span class="summary-value" id="summaryPeakBusy">0</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Avg Wait Time</span>
+              <span class="summary-value" id="summaryAvgWait">0ms</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Avg Exec Time</span>
+              <span class="summary-value" id="summaryAvgExec">0ms</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Avg Turnaround</span>
+              <span class="summary-value" id="summaryAvgTurnaround">0ms</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Task Mix</span>
+              <span class="summary-value summary-text" id="summaryTaskMix">No tasks yet</span>
+            </div>
           </div>
         </div>
       </div>
@@ -630,18 +730,18 @@
         <h3>Simulation Mode</h3>
         <div class="sync-toggle-btns">
           <button id="noSyncBtn" class="sync-mode-btn active" onclick="setConcurrencyMode('unsafe')">
-            <span class="danger-icon">⚠</span>
+            <span class="danger-icon">!</span>
             Without Synchronization
           </button>
           <button id="syncBtn" class="sync-mode-btn" onclick="setConcurrencyMode('safe')">
-            <span class="safe-icon">🔒</span>
+            <span class="safe-icon">LOCK</span>
             With Mutex Lock
           </button>
         </div>
         <div class="sync-explanation" id="syncExplan">
           <div class="danger-box">
-            <strong>⚠ Race Condition Active!</strong>
-            <p>Multiple threads accessing shared counter without locking. This causes data corruption — final value will
+            <strong>Race Condition Active!</strong>
+            <p>Multiple threads accessing shared counter without locking. This causes data corruption - final value will
               be wrong!</p>
           </div>
         </div>
@@ -663,7 +763,7 @@
           <div class="cv-resource-label">Shared Memory</div>
           <div class="cv-resource-box" id="cvResource">
             <div class="cv-value" id="cvValue">0</div>
-            <div class="cv-lock" id="cvLock">🔓 Unlocked</div>
+            <div class="cv-lock" id="cvLock">Unlocked</div>
           </div>
         </div>
         <div class="cv-log" id="cvLog">
@@ -1130,7 +1230,7 @@ if __name__ == "__main__":
         </table>
       </div>
       <div class="monitor-footer">
-        <span id="monitorFooter">Showing 0 threads — Start simulation to populate</span>
+        <span id="monitorFooter">Showing 0 threads - Start simulation to populate</span>
       </div>
     </div>
   </section>
@@ -1147,7 +1247,7 @@ if __name__ == "__main__":
         <div class="insight-num">01</div>
         <h3>Why Thread Pools Improve Performance</h3>
         <p>Creating OS threads is expensive: stack allocation (~1-8MB), kernel data structures, TLB flush, scheduler
-          state. A thread pool amortizes this cost across many requests, reducing latency by 10-40× for workloads with
+          state. A thread pool amortizes this cost across many requests, reducing latency by 10-40x for workloads with
           short tasks. Connection pooling in web servers follows the same principle.</p>
         <div class="insight-tag">Performance Theory</div>
       </div>
@@ -1175,9 +1275,9 @@ if __name__ == "__main__":
       <div class="insight-card">
         <div class="insight-num">04</div>
         <h3>When to Avoid Thread Pools</h3>
-        <p>Thread pools are suboptimal when: (1) Tasks are extremely long-running (hours) — consider dedicated threads.
-          (2) Tasks vary wildly in duration — work-stealing queues perform better. (3) Tasks are highly I/O bound —
-          consider async/await (Node.js model). (4) Security isolation is required — use process pools.</p>
+        <p>Thread pools are suboptimal when: (1) Tasks are extremely long-running (hours) - consider dedicated threads.
+          (2) Tasks vary wildly in duration - work-stealing queues perform better. (3) Tasks are highly I/O bound -
+          consider async/await (Node.js model). (4) Security isolation is required - use process pools.</p>
         <div class="insight-tag">Anti-patterns</div>
       </div>
     </div>
@@ -1192,11 +1292,11 @@ if __name__ == "__main__":
       </div>
       <div class="footer-info">
         <p>Built for B.Tech Operating Systems Project</p>
-        <p class="footer-tech">React • Chart.js • Web Animations API • Canvas 2D</p>
+        <p class="footer-tech">HTML | CSS | JavaScript | Chart.js | Canvas 2D</p>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2026 ThreadPool OS Simulator • All simulations are educational demonstrations</p>
+      <p>(c) 2026 ThreadPool OS Simulator | All simulations are educational demonstrations</p>
     </div>
   </footer>
 
